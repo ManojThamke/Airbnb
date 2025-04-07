@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hotel Management</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <%- include('header') %>
+        <h1>Hello</h1>
+
+        <!-- Tabs Navigation -->
+        <div class="action-buttons">
+            <button class="tab-button active">Manage Hotels</button>
+            <button class="tab-button">Manage Bookings</button>
+        </div>
+
+
+
+        <!-- Manage Hotels Section -->
+        <div id="hotels" class="tab-content active-tab">
+            <h2>Manage Hotels</h2>
+            <form action="/hotels" method="POST" enctype="multipart/form-data">
+                <input type="text" name="name" placeholder="Hotel Name" required>
+                <input type="text" name="location" placeholder="Location" required>
+                <input type="number" name="pricePerNight" placeholder="Price per Night" required>
+                <input type="number" name="rating" placeholder="Rating (1-5)" required>
+                <input type="number" name="availableRooms" placeholder="Available Rooms" required>
+                <input type="file" name="imageUrls" multiple required>
+                <button type="submit">Add Hotel</button>
+            </form>
+
+            <table>
+                <tr>
+                    <th>Image</th>
+                    <th>Hotel Name</th>
+                    <th>Location</th>
+                    <th>Price (₹)</th>
+                    <th>Rating</th>
+                    <th>Rooms</th>
+                    <th>Actions</th>
+                </tr>
+                <% hotels.forEach(hotel=> { %>
+                    <tr>
+                        <td>
+                            <% if (hotel.imageUrls.length> 0) { %>
+                                <img src="<%= hotel.imageUrls[0] %>" alt="Hotel Image" class="hotel-image">
+                                <% } else { %>
+                                    No Image
+                                    <% } %>
+                        </td>
+                        <td>
+                            <%= hotel.name %>
+                        </td>
+                        <td>
+                            <%= hotel.location %>
+                        </td>
+                        <td>₹<%= hotel.pricePerNight %>
+                        </td>
+                        <td>
+                            <%= hotel.rating %>
+                        </td>
+                        <td>
+                            <%= hotel.availableRooms %>
+                        </td>
+                        <td>
+                            <form action="/hotels/<%= hotel._id %>?_method=PUT" method="POST"
+                                enctype="multipart/form-data">
+                                <input type="text" name="name" value="<%= hotel.name %>" required>
+                                <input type="text" name="location" value="<%= hotel.location %>" required>
+                                <input type="number" name="pricePerNight" value="<%= hotel.pricePerNight %>" required>
+                                <input type="number" name="rating" value="<%= hotel.rating %>" required>
+                                <input type="number" name="availableRooms" value="<%= hotel.availableRooms %>" required>
+                                <input type="file" name="imageUrls" multiple>
+                                <button type="submit">Update</button>
+                            </form>
+                            <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST">
+                                <button type="submit" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </table>
+        </div>
+
+        <!-- Bookings Section -->
+        <div id="bookings" class="tab-content">
+            <h2>Bookings</h2>
+            <table>
+                <tr>
+                    <th>User</th>
+                    <th>Hotel</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Guests</th>
+                    <th>Total Amount</th>
+                </tr>
+                <% bookings.forEach(booking=> { %>
+                    <tr>
+                        <td>
+                            <%= booking.user ? booking.user.name : 'N/A' %>
+                        </td>
+                        <td>
+                            <%= booking.hotel ? booking.hotel.name : 'N/A' %>
+                        </td>
+                        <td>
+                            <%= booking.checkIn ? booking.checkIn.toDateString() : 'Not Available' %>
+                        </td>
+                        <td>
+                            <%= booking.checkOut ? booking.checkOut.toDateString() : 'Not Available' %>
+                        </td>
+                        <td>
+                            <%= booking.guests %>
+                        </td>
+                        <td>₹<%= booking.totalPrice %>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </table>
+
+            <!-- Pagination Links -->
+            <div class="pagination">
+                <% for(let i=1; i <=totalPages; i++) { %>
+                    <a href="/admin/dashboard?page=<%= i %>&tab=<%= typeof currentTab !== 'undefined' ? currentTab : 'hotels' %>"
+                        class="pagination-btn <%= (typeof currentPage !== 'undefined' && i === currentPage) ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                    <% } %>
+            </div>
+
+        </div>
+
+        <script src="/js/admindashboard.js"></script>
+
+</body>
+
+</html>

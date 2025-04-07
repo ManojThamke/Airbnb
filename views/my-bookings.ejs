@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include('header') %>
+
+    <div class="my-bookings-container">
+        <h1>My Bookings</h1>
+
+        <% if (bookings.length === 0) { %>
+            <p>No bookings found.</p>
+        <% } else { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hotel</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Guests</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% bookings.forEach(booking => { %>
+                        <tr>
+                            <td><%= booking.hotel.name %></td>
+                            <td><%= booking.checkIn.toDateString() %></td>
+                            <td><%= booking.checkOut.toDateString() %></td>
+                            <td><%= booking.guests %></td>
+                            <td>₹<%= booking.totalPrice %></td>
+                            <td>
+                                <button class="cancel-btn" data-id="<%= booking._id %>">Cancel</button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>
+
+    <script src="/js/myBookings.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= hotel.name %> - Hotel Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include('header') %>
+
+    <div class="hotel-details-container">
+        <div class="hotel-left">
+            <!-- Image Gallery -->
+            <div class="image-grid">
+                <% hotel.imageUrls.forEach((image, index) => { %>
+                    <% if (index < 5) { %>
+                        <img class="lazy" data-src="<%= image %>" alt="Hotel Image">
+                    <% } %>
+                <% }) %>
+
+                <% if (hotel.imageUrls.length > 5) { %>
+                    <div class="show-more">
+                        <img class="lazy" data-src="<%= hotel.imageUrls[5] %>" alt="Hotel Image">
+                        <div class="overlay">+ More</div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="hotel-right">
+            <h1><%= hotel.name %></h1>
+            <p><strong>Location:</strong> <%= hotel.location %></p>
+            <p><strong>Price per Night:</strong> ₹<%= hotel.pricePerNight %></p>
+            <p><strong>Rating:</strong> <%= hotel.rating %> ⭐</p>
+            <p><strong>Description:</strong> Nice hotel for stay</p>
+
+            <a href="/bookings/<%= hotel._id %>" class="book-now-btn">Book Now</a>
+            <a href="/" class="back-button">Back to Listings</a>
+        </div>
+    </div>
+
+    <script src="/js/gallery.js"></script>
+    <script src="/js/lazyload.js"></script>
+
+</body>
+</html>

@@ -1,2 +1,5 @@
-mode_modules/
+<<<<<<< HEAD
+node_modules/
+=======
+>>>>>>> 94451e0fbd6a336cf50bbe044c1e2e1d94553a5e
 .env

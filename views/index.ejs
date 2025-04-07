@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Clone</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include('header') %>
+
+    <main>
+
+        <%- include('hotels', { hotels: hotels, searchQuery: searchQuery, currentPage: currentPage, totalPages: totalPages }) %>
+
+        <% if (typeof session !== 'undefined' && session.user) { %>
+            <p>Welcome, <%= session.user.name %>!</p>
+            <a href="/auth/logout">Logout</a>
+        <% } else { %>
+            <a href="/auth/login">Login</a>
+        <% } %>
+
+    </main>
+
+</body>
+</html>
