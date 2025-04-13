@@ -1,4 +1,6 @@
+// Load environment variable from.env
 require('dotenv').config();
+
 const express = require('express');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
@@ -7,6 +9,7 @@ const session = require('express-session');
 const helmet = require('helmet');
 const methodOverride = require('method-override');
 
+// import routes
 const userRouter = require('./router/user.router');
 const hotelRouter = require('./router/hotel.router');
 const bookingRouter = require('./router/booking.router');
@@ -14,6 +17,7 @@ const authRoutes = require('./router/auth.router');
 const indexRouter = require('./router/index.router');
 const adminRouter = require('./router/admin.router');
 
+// import models
 const User = require('./models/user.model');
 const Hotel = require('./models/hotel.model');
 const Booking = require('./models/booking.model');
@@ -47,13 +51,13 @@ app.use(cors({
 }));
 
 // Session Middleware (Before Routes)
-app.set('trust proxy', 1); // Needed if using secure cookies in production
+app.set('trust proxy', 1); 
 app.use(session({
     secret: process.env.SECRET_KEY || 'fa18bd5cb98d597ddaff3d490ea9a8eec6ce9614acfd572f896b602766f3ee98',
     resave: false,
     saveUninitialized: true,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Set to `true` in production (HTTPS required)
+        secure: process.env.NODE_ENV === 'production', 
         httpOnly: true,
         sameSite: 'strict'
     }
@@ -65,7 +69,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes
+// Use Routes
 app.use('/users', userRouter);
 app.use('/hotels', hotelRouter);
 app.use('/bookings', bookingRouter);
@@ -95,7 +99,7 @@ app.get('/test-models', async (req, res) => {
 
 
 
-// Default Route
+// HomePage Route
 app.get('/', (req, res) => {
     res.send('Server is running and Database is connected!');
 });

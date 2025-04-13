@@ -7,20 +7,20 @@ const User = require('../models/user.model');
 
 require('dotenv').config();
 
-let refreshTokens = [];
+let refreshTokens = []; //Store refresh tockens
 
-// Helper function to generate tokens
+// Generate and access refresh tokens
 const generateTokens = (user) => {
     const accessToken = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
-        { expiresIn: '15m' }
+        { expiresIn: '15m' } //short-lived
     );
 
     const refreshToken = jwt.sign(
         { id: user._id, role: user.role }, 
         process.env.REFRESH_SECRET,
-        { expiresIn: '7d' }
+        { expiresIn: '7d' } //long-lived
     );
 
     return { accessToken, refreshToken };
@@ -30,7 +30,7 @@ const generateTokens = (user) => {
 const registerUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ errors: errors.array() }); //Return validation errors
     }
 
     const { name, email, password, role } = req.body;
@@ -41,15 +41,17 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
+        // Hash Password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // create and store user
         user = new User({ 
             name, 
             email, 
             password: hashedPassword, 
-            role: role || 'user', 
-            status: 'active' 
+            role: role || 'user', //By default user role 
+            status: 'active' // by default user ststus active
         });
 
         await user.save();
@@ -64,7 +66,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ errors: errors.array() }); //return validation error
     }
 
     const { email, password } = req.body;
@@ -80,14 +82,16 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
+        // Check user account is active
         if (user.status !== 'active') {
             return res.status(403).json({ message: 'Account not activated. Contact admin.' });
         }
 
+        // Generate token
         const { accessToken, refreshToken } = generateTokens(user);
         refreshTokens.push(refreshToken);
 
-        // ✅ Set both tokens in cookies
+        // Set tokens in cookies
         res.cookie("accessToken", accessToken, {
             httpOnly: false,
             secure: false,
@@ -100,7 +104,7 @@ const loginUser = async (req, res) => {
             sameSite: "strict"
         });
 
-        // ✅ Store user session
+        // Store user session
         req.session.user = {
             id: user._id,
             name: user.name,
@@ -108,14 +112,15 @@ const loginUser = async (req, res) => {
             role: user.role
         };
 
+        // Return response based on user role
         if (req.headers["accept"] === "application/json") {
             return res.json({ message: "Login successful", accessToken, role: user.role });
         }
 
         if (user.role === "admin")  {
-            return res.redirect('/admin/dashboard');
+            return res.redirect('/admin/dashboard'); //if admin login redirect to admin dashboard
         } else {
-            return res.redirect("/")
+            return res.redirect("/") //if user login redirect to home page
         }
 
     } catch (error) {
@@ -124,7 +129,7 @@ const loginUser = async (req, res) => {
 };
 
 
-// Refresh Token
+// Get new access token using refresh token
 const refreshToken = (req, res) => {
     const token = req.cookies.refreshToken;
 
@@ -137,7 +142,7 @@ const refreshToken = (req, res) => {
         const newAccessToken = jwt.sign(
             { id: decoded.id, role: decoded.role }, 
             process.env.JWT_SECRET,
-            { expiresIn: '15m' }
+            { expiresIn: '15m' } //token age
         );
 
         res.json({ accessToken: newAccessToken });
@@ -146,18 +151,19 @@ const refreshToken = (req, res) => {
     }
 };
 
-// Logout User
+// Logout User and clear session and cookies
 const logoutUser = (req, res) => {
     const token = req.cookies.refreshToken;
 
     if (token) {
+        // remove token from list
         refreshTokens = refreshTokens.filter(t => t !== token);
     }
 
-    // ✅ Clear cookies
+    // Clear cookies
     res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
-    // ✅ Destroy session
+    // Destroy session
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).json({ message: 'Logout failed' });
@@ -167,7 +173,7 @@ const logoutUser = (req, res) => {
     });
 };
 
-
+// Export controller functions
 module.exports = {
     registerUser,
     loginUser,

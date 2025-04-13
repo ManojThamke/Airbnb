@@ -5,8 +5,8 @@ const Hotel = require("../models/hotel.model"); // Ensure correct path
 // Admin Dashboard - View All Bookings with Pagination
 const getAdminDashboard = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; // Get current page, default to 1
-        const limit = 10; // Number of bookings per page
+        const page = parseInt(req.query.page) || 1; //current page default 
+        const limit = 10; 
         const skip = (page - 1) * limit;
 
         // Fetch total bookings count for pagination

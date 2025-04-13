@@ -11,24 +11,30 @@ const createBooking = async (req, res) => {
         console.log("[DEBUG] Booking Request Received", req.body);
         console.log("[DEBUG] Authenticated User:", req.user);
 
+        // Ensure user is authenticated
         if (!userId) {
             return res.status(401).json({ message: "Unauthorized! Please login first." });
         }
 
+        // vallidate required fields
         if (!hotelId || !checkIn || !checkOut || !guests) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
+        // check hotels
         const hotel = await Hotel.findById(hotelId);
         if (!hotel) return res.status(404).json({ message: "Hotel not found" });
 
+        // calculate total days and validate date range
         const checkInDate = new Date(checkIn);
         const checkOutDate = new Date(checkOut);
         const totalDays = (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24);
         if (totalDays < 1) return res.status(400).json({ message: "Invalid date range" });
 
+        // calculate total booking price
         const totalPrice = hotel.pricePerNight * totalDays * guests;
 
+        // create new booking
         const booking = new Booking({
             user: userId,
             hotel: hotelId,
@@ -53,11 +59,13 @@ const createBooking = async (req, res) => {
 // Get all bookings (Admin only)
 const getAllBookings = async (req, res) => {
     try {
+        // declaring how many bookings shown on per page
         let { page, limit } = req.query;
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 10;
         const skip = (page - 1) * limit;
 
+        // fetch bookings with user and hotel details
         const bookings = await Booking.find()
             .populate('user', 'name email')
             .populate('hotel', 'name location')
@@ -67,6 +75,7 @@ const getAllBookings = async (req, res) => {
 
         const totalBookings = await Booking.countDocuments();
 
+        // render admin-dashboard with booking data
         res.render("admin-dashboard", {
             bookings,
             totalPages: Math.ceil(totalBookings / limit),

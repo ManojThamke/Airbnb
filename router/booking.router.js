@@ -10,13 +10,13 @@ const {
 
 const router = express.Router();
 
-// Debugging Middleware - Logs the Decoded User Data
+//Logs the Decoded User Data
 const debugUser = (req, res, next) => {
     console.log("Decoded User Data:", req.user);
     next();
 };
 
-// Create a new booking (Only for authenticated users)
+// Create a new booking
 router.post('/create', authenticateUser, authorizeRole('user'), createBooking);
 
 // Get all bookings (Admin only)
