@@ -8,12 +8,12 @@ router.use(cookieParser());
 
 // Render Login Page (GET Request)
 router.get('/login', (req, res) => {
-    res.render('login'); // Ensure views/login.ejs exists
+    res.render('login'); 
 });
 
 // Render Signup Page (GET Request)
 router.get('/signup', (req, res) => {
-    res.render('signup'); // Ensure views/signup.ejs exists
+    res.render('signup'); 
 });
 router.get('/profile', (req, res) => {
     if (!req.session.user) {
@@ -34,7 +34,7 @@ router.get('/logout', (req, res) => {
         if (err) {
             return res.status(500).send('Logout failed');
         }
-        res.redirect('/'); // Redirect to home after logout
+        res.redirect('/'); 
     });
 });
 
@@ -49,7 +49,7 @@ router.post(
     registerUser
 );
 
-// Login Route (POST Request)
+// Login Route 
 router.post(
     '/login',
     [
@@ -59,10 +59,10 @@ router.post(
     loginUser
 );
 
-// Refresh Token Route (POST Request)
+// Refresh Token Route 
 router.post('/refresh-token', refreshToken);
 
-// Logout Route (POST Request)
+// Logout Route 
 router.post('/logout', logoutUser);
 
 module.exports = router;
