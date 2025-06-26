@@ -81,17 +81,6 @@ npm start
 
 Now visit: `http://localhost:5000` in your browser
 
----
-
-## 📸 Screenshots
-
-> Add screenshots inside a `screenshots/` folder and reference them like below:
-
-![Homepage](screenshots/home.png)
-![Login](screenshots/login.png)
-![Hotel Listings](screenshots/listings.png)
-
----
 
 ## 🗂️ Future Enhancements
 
